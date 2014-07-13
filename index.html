@@ -1,0 +1,136 @@
+<html>
+<head>
+<title>MaxCoin Paper Wallet Generator</title>
+</head>
+<body>
+<!-- Cryptojs hashing functions -->
+<script src="js/cryptojs-v3/sha256.js"></script>
+<script src="js/cryptojs-v3/ripemd160.js"></script>
+<script src="js/cryptojs-v3/sha3.js"></script>
+<script src="js/cryptojs-v3/lib-typedarrays.js"></script>
+<!-- End of cryptojs hashing functions -->
+
+<!-- EC keypair generation -->
+<script src="js/jsrsasign/jsrsasign-latest-all-min.js"></script>
+<!-- End of EC keypair generation -->
+
+<!-- Base58 encoding -->
+<script src="js/cryptocoinjs/bs58.js"></script>
+<!-- End of base58 encoding -->
+
+<!-- Address generation functions -->
+<script>
+	var hash_keccak = function(s) {
+		//return sha3_algos['keccak'](d.o.transcode(s, 'hex'));
+		return CryptoJS.SHA3(s, {  outputLength: 256, asBytes: true });
+	}
+
+	var hash_sha256 = function(s) { 
+		return CryptoJS.SHA256(s, { asBytes: true });
+	}
+
+	var hash_ripemd160 = function(s) {
+		return CryptoJS.RIPEMD160(s, { asBytes: true });
+	}
+
+	var create_keypair = function() {
+		var keypair = KEYUTIL.generateKeypair("EC", "secp256r1");
+		return {prvKey: keypair.prvKeyObj.prvKeyHex, pubKey: keypair.pubKeyObj.pubKeyHex};
+	}
+
+	function wordArrayToByteArray(wordArray) {
+		// Shortcuts
+        var words = wordArray.words;
+        var sigBytes = wordArray.sigBytes;
+
+        // Convert
+        var u8 = new Uint8Array(sigBytes);
+        for (var i = 0; i < sigBytes; i++) {
+            var byte = (words[i >>> 2] >>> (24 - (i % 4) * 8)) & 0xff;
+            u8[i]=byte;
+        }
+
+        return u8;
+	}
+
+	var prvKey_to_WIF = function(prvKey) {
+		// encode for CryptoJS
+		var baby = CryptoJS.enc.Hex.parse(prvKey);
+
+		// add 0x80 to beginning
+		var version = CryptoJS.enc.Hex.parse('80');
+		var child = version.concat(baby);
+
+		// hash the extended key
+		var teenager = hash_keccak(child);
+
+		// take first 4 bytes of second hash as checksum
+		var checksum = CryptoJS.lib.WordArray.create(teenager.words.slice(0, 4), 4);
+
+		// add checksum to end of extended key
+		var adult = child.concat(checksum);
+
+		// convert to byte array, for base58
+		var bytes = wordArrayToByteArray(adult);
+
+		// base58 encode
+		return bs58_encode(bytes);
+	}
+
+	var create_address = function(pubkey) {
+		// encode for CryptoJS
+		var key = CryptoJS.enc.Hex.parse(pubkey);
+	    	
+		// hash public key
+	    // using RIPEMD160(SHA256(pubkey))	
+		var baby = hash_sha256(key);
+		var child = hash_ripemd160(baby);
+
+		// add version/network byte (base58 'm')
+		var version = CryptoJS.enc.Hex.parse('6e');
+		version.concat(child);
+		var teenager = version;;
+
+		// hash this using Keccak
+		var adult = hash_keccak(teenager);
+
+		// take 4 bytes as checksum
+		// append these to the end of the string
+		var checksum = CryptoJS.lib.WordArray.create(adult.words.slice(0, 4), 4);
+		var pensioner = teenager;
+		pensioner.concat(checksum);
+
+		// convert to byte array, for base58
+		var bytes = wordArrayToByteArray(pensioner);
+
+		// base58 encode the address
+		return bs58_encode(bytes);f
+	};
+
+	var generate_new_address = function() {
+		// Create a public/private keypair
+		var keypair = create_keypair();
+
+		var wifKey = prvKey_to_WIF(keypair.prvKey);
+		console.log(wifKey);
+		// var success = validate_WIF(wifKey);
+
+		// // Create a MaxCoin address from this keypair
+		var address = create_address(keypair.pubKey);
+		// success = validate_address(address);
+
+        document.getElementById('address').innerHTML = address;
+		document.getElementById('secret').innerHTML = wifKey;
+	}
+</script>
+<!-- End of address generation functions -->
+
+<!-- HTML -->
+<div id="form-container">
+	<button onclick="generate_new_address()">Generate</button>
+	<div id="address"></div>
+	<div id="secret"></div>
+</div>
+<!-- End of HTML -->
+</body>
+</html>
