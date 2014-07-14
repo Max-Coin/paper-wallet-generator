@@ -10,55 +10,8 @@ form {
 	margin: 20px 0;
 }
 
-#qrcode {
-	display: none;
-}
-
-#qrcodes {
-	margin: 30px 0;
-}
-
-#qrcodes div {
-	display: inline-block;
-	position: relative;
-	margin: 0 .5em .5em 0;
-}
-
-#qrcodes .spinner {
-	background: url('../img/spinner.gif') center center no-repeat rgba(255, 255, 255, .8);
-	bottom: 0;
-	left: 0;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-
-#qrcodes .link {
-	background: rgba(255, 255, 255, .8);
-	bottom: 0;
-	left: 0;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-
-#qrcodes .link input {
-	left: 5%;
-	margin-top: -17px;
-	position: absolute;
-	text-align: center;
-	top: 50%;
-	width: 90%;
-}
-
-#qrcodes canvas {
-	box-shadow: 0 0 5px rgba(0, 0, 0, .5);
-	-moz-box-shadow: 0 0 5px rgba(0, 0, 0, .5);
-	-webkit-box-shadow: 0 0 5px rgba(0, 0, 0, .5);
-	cursor: pointer;
-	display: block !important;
-	padding: 1px;
-	margin: 0 .5em .5em 0;
+.qrcode {
+	margin: 20px 0;
 }
 
 #fork {

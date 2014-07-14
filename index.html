@@ -26,6 +26,10 @@
 		<script src="js/cryptocoinjs/bs58.js"></script>
 		<!-- End of base58 encoding -->
 
+		<!-- QR encoding -->
+		<script src="js/qrencodejs/qrencode.js"></script>
+		<!-- End of QR encoding -->
+
 		<!-- Address generation functions -->
 		<!-- Luke Mitchell, July 2014 -->
 		<script>
@@ -130,6 +134,11 @@
 
 		        document.getElementById('address').innerHTML = address;
 				document.getElementById('secret').innerHTML = wifKey;
+
+				document.getElementById("qrcode-address").innerHTML = "";
+				document.getElementById("qrcode-secret").innerHTML = "";
+				new QRCode(document.getElementById("qrcode-address"), "maxcoin:"+address);
+				new QRCode(document.getElementById("qrcode-secret"), ""+wifKey);
 			}
 		</script>
 		<!-- End of address generation functions -->
@@ -149,11 +158,13 @@
 				<div class="panel clearfix">
 					<div class="left">
 						<h3>Address</h3>
-						<span id="address"></span>
+						<div id="qrcode-address" class="qrcode"></div>
+						<span id="address" class="key"></span>
 					</div>
 					<div class="right">
 						<h3>Private key (WIF)</h3>
-						<span id="secret"></span>
+						<div id="qrcode-secret" class="qrcode right"></div>
+						<span id="secret" class="key"></span>
 					</div>
 				</div>
 
