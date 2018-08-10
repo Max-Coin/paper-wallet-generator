@@ -10,6 +10,9 @@ This generator is written in pure JavaScript so you can run it from your browser
 Using the Paper Wallet
 ======================
 Step 1: Download the wallet, simple click the download button and download the zip.
+
 Step 2: Unzip the wallet downloaded, and select/double click the index.html file.
+
 Step 3: Paper Wallet opens in your default browser.
+
 Step 4: Following Instructions on the paper wallet.
